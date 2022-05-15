@@ -6,9 +6,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
 import android.util.Log;
-
 import com.brother.ptouch.sdk.BLEPrinter;
+import com.brother.ptouch.sdk.LabelInfo;
 import com.brother.ptouch.sdk.NetPrinter;
+import com.brother.ptouch.sdk.Printer;
+import com.brother.ptouch.sdk.PrinterInfo;
+import com.brother.ptouch.sdk.PrinterInfo.Model;
 import com.brother.ptouch.sdk.PrinterStatus;
 import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;
@@ -16,18 +19,12 @@ import com.getcapacitor.NativePlugin;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
-
-import com.brother.ptouch.sdk.Printer;
-import com.brother.ptouch.sdk.PrinterInfo;
-import com.brother.ptouch.sdk.PrinterInfo.Model;
-import com.brother.ptouch.sdk.LabelInfo;
-
 import java.util.List;
 
 @NativePlugin
 public class BrotherPrint extends Plugin {
 
-    @PluginMethod()
+    @PluginMethod
     public void printImage(PluginCall call) {
         // object.encodedImageで値を入力
         final String encodedImage = call.getString("encodedImage");
@@ -46,6 +43,18 @@ public class BrotherPrint extends Plugin {
         }
 
         switch (call.getString("printerType")) {
+            case "PT-P910BT":
+                settings.printerModel = Model.PT_P910BT;
+
+                final String localName = call.getString("localName");
+
+                if (localName != null) {
+                    settings.port = PrinterInfo.Port.BLUETOOTH;
+                    settings.setLocalName(localName);
+                } else {
+                    settings.port = PrinterInfo.Port.USB;
+                }
+                break;
             case "QL-800":
                 settings.printerModel = Model.QL_800;
                 settings.port = PrinterInfo.Port.USB;
@@ -92,25 +101,28 @@ public class BrotherPrint extends Plugin {
 
         try {
             Log.d(getLogTag(), "Start Printer Thread");
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    if (printer.startCommunication()) {
-                        PrinterStatus result = printer.printImage(decodedByte);
+            new Thread(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        if (printer.startCommunication()) {
+                            PrinterStatus result = printer.printImage(decodedByte);
 
-                        if (result.errorCode == PrinterInfo.ErrorCode.ERROR_NONE) {
-                            notifyListeners("onPrint", new JSObject().put("value", result));
+                            if (result.errorCode == PrinterInfo.ErrorCode.ERROR_NONE) {
+                                notifyListeners("onPrint", new JSObject().put("value", result));
+                            } else {
+                                Log.d("TAG", "ERROR - " + result.errorCode);
+                                notifyListeners("onPrintError", new JSObject().put("value", result.errorCode));
+                            }
+
+                            printer.endCommunication();
                         } else {
-                            Log.d("TAG", "ERROR - " + result.errorCode);
-                            notifyListeners("onPrintError", new JSObject().put("value", result.errorCode));
+                            notifyListeners("onPrintFailedCommunication", new JSObject().put("value", ""));
                         }
-
-                        printer.endCommunication();
-                    } else {
-                        notifyListeners("onPrintFailedCommunication", new JSObject().put("value", ""));
                     }
                 }
-            }).start();
+            )
+                .start();
             call.success(new JSObject().put("value", true));
         } catch (Exception ex) {
             notifyListeners("onPrintFailedCommunication", new JSObject().put("value", ""));
@@ -118,46 +130,50 @@ public class BrotherPrint extends Plugin {
         }
     }
 
-    @PluginMethod()
+    @PluginMethod
     public void searchWiFiPrinter(PluginCall call) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Printer printer = new Printer();
-                NetPrinter[] printerList = printer.getNetPrinters("QL-820NWB");
+        new Thread(
+            new Runnable() {
+                @Override
+                public void run() {
+                    Printer printer = new Printer();
+                    NetPrinter[] printerList = printer.getNetPrinters("QL-820NWB");
 
-                JSArray resultList = new JSArray();
-                for (NetPrinter device: printerList) {
-                    Log.d("TAG", String.format("Model: %s, IP Address: %s", device.modelName, device.ipAddress));
-                    resultList.put(device.ipAddress);
+                    JSArray resultList = new JSArray();
+                    for (NetPrinter device : printerList) {
+                        Log.d("TAG", String.format("Model: %s, IP Address: %s", device.modelName, device.ipAddress));
+                        resultList.put(device.ipAddress);
+                    }
+                    notifyListeners("onIpAddressAvailable", new JSObject().put("ipAddressList", resultList));
                 }
-                notifyListeners("onIpAddressAvailable", new JSObject().put("ipAddressList", resultList));
             }
-        }).start();
+        )
+            .start();
         call.success(new JSObject().put("value", true));
     }
 
-    @PluginMethod()
+    @PluginMethod
     public void searchBLEPrinter(PluginCall call) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Printer printer = new Printer();
-                List<BLEPrinter> printerList = printer.getBLEPrinters(BluetoothAdapter.getDefaultAdapter(), 30);
+        new Thread(
+            new Runnable() {
+                @Override
+                public void run() {
+                    Printer printer = new Printer();
+                    List<BLEPrinter> printerList = printer.getBLEPrinters(BluetoothAdapter.getDefaultAdapter(), 30);
 
-                JSArray resultList = new JSArray();
-                for (BLEPrinter device: printerList) {
-                    resultList.put(device.localName);
+                    JSArray resultList = new JSArray();
+                    for (BLEPrinter device : printerList) {
+                        resultList.put(device.localName);
+                    }
+
+                    notifyListeners("onBLEAvailable", new JSObject().put("localNameList", resultList));
                 }
-
-                notifyListeners("onBLEAvailable", new JSObject().put("localNameList", resultList));
             }
-        }).start();
+        )
+            .start();
         call.success(new JSObject().put("value", true));
     }
 
-    @PluginMethod()
-    public void stopSearchBLEPrinter(PluginCall call) {
-
-    }
+    @PluginMethod
+    public void stopSearchBLEPrinter(PluginCall call) {}
 }

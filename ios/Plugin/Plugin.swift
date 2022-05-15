@@ -26,7 +26,7 @@ public class BrotherPrint: CAPPlugin, BRPtouchNetworkDelegate {
             return;
         }
         
-        if (printerType != "QL-820NWB") {
+        if (printerType != "QL-820NWB" && printerType != "PT-P910BT") {
             // iOS非対応
             call.error("Error - connection is not found.");
             return;
@@ -64,7 +64,7 @@ public class BrotherPrint: CAPPlugin, BRPtouchNetworkDelegate {
             
             guard
                 let decodedByte = UIImage(data: newImageData! as Data),
-                let printSettings = BRLMQLPrintSettings(defaultPrintSettingsWith: BRLMPrinterModel.QL_820NWB)
+                let printSettings = BRLMQLPrintSettings(defaultPrintSettingsWith: (printerType == "QL-820NWB") ? BRLMPrinterModel.QL_820NWB : BRLMPrinterModel.PT_P910BT)
                 else {
                     printerDriver.closeChannel();
                     self.notifyListeners("onPrintError", data: [
