@@ -5,7 +5,7 @@ Capacitor Brother Print is a native Brother Print SDK implementation for iOS & A
 ## How to install
 
 ```
-% npm install @rdlabo/capacitor-brotherprint@git@github.com:rdlabo-team/capacitor-brotherprint.git
+% npm install @rdlabo/capacitor-brotherprint@git@github.com:paul-uulabs/capacitor-brotherprint.git
 ```
 
 ## How to use
