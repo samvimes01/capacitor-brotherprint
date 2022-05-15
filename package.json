@@ -19,7 +19,7 @@
     "build": "npm run clean && npm run docgen && tsc && rollup -c rollup.config.js",
     "clean": "rimraf ./dist",
     "watch": "tsc --watch",
-    "prepublishOnly": "npm run build",
+    "prepare": "npm run build",
     "npm-publish": "np --no-tests"
   },
   "author": "Masahiko Sakakibara<sakakibara@rdlabo.jp>",
@@ -78,9 +78,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:rdlabo-team/capacitor-brotherprint.git"
+    "url": "git@github.com:paul-uulabs/capacitor-brotherprint.git"
   },
   "bugs": {
-    "url": "git@github.com:rdlabo-team/capacitor-brotherprint.git/issues"
+    "url": "git@github.com:paul-uulabs/capacitor-brotherprint.git/issues"
   }
 }
