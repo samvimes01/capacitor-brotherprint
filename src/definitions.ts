@@ -38,7 +38,7 @@ export interface BrotherPrintPlugin {
 
 export interface BrotherPrintOptions {
   encodedImage: string;
-  printerType: 'QL-820NWB' | 'QL-800';
+  printerType: 'QL-820NWB' | 'QL-800' | 'PT-P910BT';
   numberOfCopies: number;
   labelNameIndex: 16 | 38;
   ipAddress?: string;
