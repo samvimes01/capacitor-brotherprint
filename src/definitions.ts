@@ -7,17 +7,12 @@ export interface BrotherPrintPlugin {
 
   addListener(
     eventName: 'onPrint',
-    listenerFunc: () => void,
+    listenerFunc: (info: { value: string }) => void,
   ): PluginListenerHandle;
 
   addListener(
     eventName: 'onBLEAvailable',
-    listenerFunc: () => void,
-  ): PluginListenerHandle;
-
-  addListener(
-    eventName: 'onBLEAvailable',
-    listenerFunc: () => void,
+    listenerFunc: (info: { localNameList: string[] }) => void,
   ): PluginListenerHandle;
 
   addListener(
