@@ -14,7 +14,7 @@ public class BrotherPrint: CAPPlugin, BRPtouchNetworkDelegate {
     @objc func printImage(_ call: CAPPluginCall) {
         let encodedImage: String = call.getString("encodedImage") ?? "";
         if (encodedImage == "") {
-            call.error("Error - Image data is not found.");
+            call.reject("Error - Image data is not found.");
             return;
         }
         
@@ -22,7 +22,7 @@ public class BrotherPrint: CAPPlugin, BRPtouchNetworkDelegate {
         
         let printerType: String = call.getString("printerType") ?? "";
         if (printerType == "") {
-            call.error("Error - printerType is not found.");
+            call.reject("Error - printerType is not found.");
             return;
         }
         
@@ -33,7 +33,7 @@ public class BrotherPrint: CAPPlugin, BRPtouchNetworkDelegate {
 
         if (localName=="" && ipAddress=="" && serialNumber=="") {
             // iOS非対応
-            call.error("Error - connection is not found.");
+            call.reject("Error - connection is not found.");
             return;
         }
         
@@ -94,7 +94,7 @@ public class BrotherPrint: CAPPlugin, BRPtouchNetworkDelegate {
             else {
                 NSLog("Success - Print Image")
                 printerDriver.closeChannel();
-                call.success([
+                call.resolve([
                     "value": true
                 ]);
             }
@@ -105,14 +105,8 @@ public class BrotherPrint: CAPPlugin, BRPtouchNetworkDelegate {
         NSLog("Start retrieveBluetoothPrinter");
         DispatchQueue.main.async {
             let devices = BRPtouchBluetoothManager.shared().pairedDevices() as? [BRPtouchDeviceInfo] ?? []
-            var resultList: [String] = [];
-            for deviceInfo in devices {
-                if let deviceInfo = deviceInfo as? BRPtouchDeviceInfo {
-                    resultList.append(deviceInfo.strSerialNumber);
-                }
-            }
             self.notifyListeners("onRetrieveBluetoothPrinter", data: [
-                "serialNumberList": resultList,
+                "serialNumberList": devices,
             ]);
         }
     }
@@ -138,14 +132,8 @@ public class BrotherPrint: CAPPlugin, BRPtouchNetworkDelegate {
             guard let devices = manager.getPrinterNetInfo() else {
                 return
             }
-            var resultList: [String] = [];
-            for deviceInfo in devices {
-                if let deviceInfo = deviceInfo as? BRPtouchDeviceInfo {
-                    resultList.append(deviceInfo.strIPAddress);
-                }
-            }
             self.notifyListeners("onIpAddressAvailable", data: [
-                "ipAddressList": resultList,
+                "ipAddressList": devices,
             ]);
         }
     }
@@ -157,8 +145,8 @@ public class BrotherPrint: CAPPlugin, BRPtouchNetworkDelegate {
             BRPtouchBLEManager.shared().startSearch {
                 (deviceInfo: BRPtouchDeviceInfo?) in
                 if let deviceInfo = deviceInfo {
-                    var resultList: [String] = [];
-                    resultList.append(deviceInfo.strBLEAdvertiseLocalName);
+                    var resultList: [BRPtouchDeviceInfo] = [];
+                    resultList.append(deviceInfo);
                     self.notifyListeners("onBLEAvailable", data: [
                         "localNameList": resultList,
                     ]);
