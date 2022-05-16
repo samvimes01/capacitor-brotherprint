@@ -26,16 +26,16 @@ public class BrotherPrint: CAPPlugin, BRPtouchNetworkDelegate {
             return;
         }
         
-        if (printerType != "QL-820NWB" && printerType != "PT-P910BT") {
+        // 検索からデバイス情報が得られた場合
+        let localName: String = call.getString("localName") ?? "";
+        let ipAddress: String = call.getString("ipAddress") ?? "";
+        let serialNumber: String = call.getString("serialNumber") ?? "";
+
+        if (localName=="" && ipAddress=="" && serialNumber=="") {
             // iOS非対応
             call.error("Error - connection is not found.");
             return;
         }
-        
-        
-        // 検索からデバイス情報が得られた場合
-        let localName: String = call.getString("localName") ?? "";
-        let ipAddress: String = call.getString("ipAddress") ?? "";
         
         // メインスレッドにて処理
         DispatchQueue.main.async {
@@ -44,6 +44,8 @@ public class BrotherPrint: CAPPlugin, BRPtouchNetworkDelegate {
                 channel = BRLMChannel(bleLocalName: localName);
             } else if (ipAddress != "") {
                 channel = BRLMChannel(wifiIPAddress: ipAddress);
+            } else if (serialNumber != "") {
+                channel = BRLMChannel(bluetoothSerialNumber: serialNumber);
             } else {
                 // iOSは有線接続ができない
                 self.notifyListeners("onPrintFailedCommunication", data: [
@@ -98,7 +100,23 @@ public class BrotherPrint: CAPPlugin, BRPtouchNetworkDelegate {
             }
         }
     }
-    
+
+    @objc func retrieveBluetoothPrinter(_ call: CAPPluginCall) {
+        NSLog("Start retrieveBluetoothPrinter");
+        DispatchQueue.main.async {
+            let devices = BRPtouchBluetoothManager.shared().pairedDevices()
+            var resultList: [String] = [];
+            for deviceInfo in devices {
+                if let deviceInfo = deviceInfo as? BRPtouchDeviceInfo {
+                    resultList.append(deviceInfo.strSerialNumber);
+                }
+            }
+            self.notifyListeners("onRetrieveBluetoothPrinter", data: [
+                "serialNumberList": resultList,
+            ]);
+        }
+    }
+
     @objc func searchWiFiPrinter(_ call: CAPPluginCall) {
         NSLog("Start searchWiFiPrinter");
         DispatchQueue.main.async {
@@ -131,6 +149,7 @@ public class BrotherPrint: CAPPlugin, BRPtouchNetworkDelegate {
             ]);
         }
     }
+    
     
     @objc func searchBLEPrinter(_ call: CAPPluginCall) {
         DispatchQueue.main.async {

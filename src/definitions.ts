@@ -4,10 +4,16 @@ export interface BrotherPrintPlugin {
   printImage(options: BrotherPrintOptions): Promise<{ value: boolean }>;
   searchWiFiPrinter(): Promise<void>;
   searchBLEPrinter(): Promise<void>;
+  retrieveBluetoothPrinter(): Promise<void>;
 
   addListener(
     eventName: 'onPrint',
     listenerFunc: (info: { value: string }) => void,
+  ): PluginListenerHandle;
+
+  addListener(
+    eventName: 'onRetrieveBluetoothPrinter',
+    listenerFunc: (info: { serialNumberList: string[] }) => void,
   ): PluginListenerHandle;
 
   addListener(
