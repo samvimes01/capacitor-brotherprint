@@ -104,7 +104,7 @@ public class BrotherPrint: CAPPlugin, BRPtouchNetworkDelegate {
     @objc func retrieveBluetoothPrinter(_ call: CAPPluginCall) {
         NSLog("Start retrieveBluetoothPrinter");
         DispatchQueue.main.async {
-            let devices = BRPtouchBluetoothManager.shared().pairedDevices()
+            let devices = BRPtouchBluetoothManager.shared().pairedDevices() as? [BRPtouchDeviceInfo] ?? []
             var resultList: [String] = [];
             for deviceInfo in devices {
                 if let deviceInfo = deviceInfo as? BRPtouchDeviceInfo {
