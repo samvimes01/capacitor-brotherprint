@@ -13,17 +13,17 @@ export interface BrotherPrintPlugin {
 
   addListener(
     eventName: 'onRetrieveBluetoothPrinter',
-    listenerFunc: (info: { serialNumberList: [] }) => void,
+    listenerFunc: (info: { serialNumberList: any[] }) => void,
   ): PluginListenerHandle;
 
   addListener(
     eventName: 'onBLEAvailable',
-    listenerFunc: (info: { localNameList: [] }) => void,
+    listenerFunc: (info: { localNameList: any[] }) => void,
   ): PluginListenerHandle;
 
   addListener(
     eventName: 'onIpAddressAvailable',
-    listenerFunc: (info: { ipAddressList: [] }) => void,
+    listenerFunc: (info: { ipAddressList: any[] }) => void,
   ): PluginListenerHandle;
 
   addListener(
