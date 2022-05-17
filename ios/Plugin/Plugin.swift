@@ -101,7 +101,7 @@ public class BrotherPrint: CAPPlugin, BRPtouchNetworkDelegate {
                 let labelNameIndex = call.getInt("labelNameIndex") ?? 16;
                 (printSettings  as! BRLMQLPrintSettings).labelSize = labelNameIndex == 16 ?
                     BRLMQLPrintSettingsLabelSize.rollW62 : BRLMQLPrintSettingsLabelSize.rollW62RB;
-                (printSettings  as! BRLMQLPrintSettings).autoCut = true
+                (printSettings  as! BRLMQLPrintSettings).autoCut = true;
                 (printSettings  as! BRLMQLPrintSettings).numCopies = UInt(call.getInt("numberOfCopies") ?? 1);
             }
             
@@ -109,8 +109,9 @@ public class BrotherPrint: CAPPlugin, BRPtouchNetworkDelegate {
                 let labelNameIndex = call.getInt("labelNameIndex") ?? 36;
                 (printSettings  as! BRLMPTPrintSettings).labelSize = labelNameIndex == 36 ?
                 BRLMPTPrintSettingsLabelSize.width36mm : BRLMPTPrintSettingsLabelSize.width24mm;
-                (printSettings  as! BRLMPTPrintSettings).autoCut = true
+                (printSettings  as! BRLMPTPrintSettings).autoCut = true;
                 (printSettings  as! BRLMPTPrintSettings).numCopies = UInt(call.getInt("numberOfCopies") ?? 1);
+                (printSettings  as! BRLMPTPrintSettings).printOrientation = BRLMPrintSettingsOrientation.landscape;
             }
             
             if (printerModel == "TD") {
