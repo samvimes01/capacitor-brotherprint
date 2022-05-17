@@ -66,7 +66,7 @@ public class BrotherPrint: CAPPlugin, BRPtouchNetworkDelegate {
             
             guard
                 let decodedByte = UIImage(data: newImageData! as Data),
-                let printSettings = BRLMQLPrintSettings(defaultPrintSettingsWith: (printerType == "QL-820NWB") ? BRLMPrinterModel.QL_820NWB : BRLMPrinterModel.PT_P910BT)
+                let printSettings = BRLMQLPrintSettings(defaultPrintSettingsWith: self.getPrinterSettings(printerType))
                 else {
                     printerDriver.closeChannel();
                     self.notifyListeners("onPrintError", data: [
@@ -105,8 +105,12 @@ public class BrotherPrint: CAPPlugin, BRPtouchNetworkDelegate {
         NSLog("Start retrieveBluetoothPrinter");
         DispatchQueue.main.async {
             let devices = BRPtouchBluetoothManager.shared().pairedDevices() as? [BRPtouchDeviceInfo] ?? []
+            var resultList: [[String:String]] = [];
+            for deviceInfo in devices {
+                resultList.append(self.formatDeviceDate(deviceInfo));
+            }
             self.notifyListeners("onRetrieveBluetoothPrinter", data: [
-                "serialNumberList": devices,
+                "serialNumberList": resultList,
             ]);
         }
     }
@@ -132,12 +136,17 @@ public class BrotherPrint: CAPPlugin, BRPtouchNetworkDelegate {
             guard let devices = manager.getPrinterNetInfo() else {
                 return
             }
+            var resultList: [[String:String]] = [];
+            for deviceInfo in devices {
+                if let deviceInfo = deviceInfo as? BRPtouchDeviceInfo {
+                    resultList.append(self.formatDeviceDate(deviceInfo));
+                }
+            }
             self.notifyListeners("onIpAddressAvailable", data: [
-                "ipAddressList": devices,
+                "ipAddressList": resultList,
             ]);
         }
     }
-    
     
     @objc func searchBLEPrinter(_ call: CAPPluginCall) {
         DispatchQueue.main.async {
@@ -145,8 +154,8 @@ public class BrotherPrint: CAPPlugin, BRPtouchNetworkDelegate {
             BRPtouchBLEManager.shared().startSearch {
                 (deviceInfo: BRPtouchDeviceInfo?) in
                 if let deviceInfo = deviceInfo {
-                    var resultList: [BRPtouchDeviceInfo] = [];
-                    resultList.append(deviceInfo);
+                    var resultList: [[String:String]] = [];
+                    resultList.append(self.formatDeviceDate(deviceInfo));
                     self.notifyListeners("onBLEAvailable", data: [
                         "localNameList": resultList,
                     ]);
@@ -162,6 +171,63 @@ public class BrotherPrint: CAPPlugin, BRPtouchNetworkDelegate {
         DispatchQueue.main.async {
             BRPtouchBLEManager.shared().stopSearch()
         }
+    }
+    
+    private func formatDeviceDate(_ deviceInfo:BRPtouchDeviceInfo) -> [String:String] {
+        return [
+            "strModelName": deviceInfo.strModelName ?? "",
+            "strPrinterName": deviceInfo.strPrinterName ?? "",
+            "strSerialNumber": deviceInfo.strSerialNumber ?? "",
+            "strLocation": deviceInfo.strLocation ?? "",
+            "strIPAddress": deviceInfo.strIPAddress ?? "",
+            "strNodeName": deviceInfo.strNodeName ?? "",
+            "strMACAddress": deviceInfo.strMACAddress ?? "",
+            "strBLEAdvertiseLocalName": deviceInfo.strBLEAdvertiseLocalName ?? "",
+        ];
+    }
+    
+    private func getPrinterSettings(_ printerType:String) -> BRLMPrinterModel {
+        var value: BRLMPrinterModel;
+        switch printerType {
+        case "PJ-673":   value = BRLMPrinterModel.PJ_673;
+        case "PJ-773":   value = BRLMPrinterModel.PJ_773;
+        case "MW-170":   value = BRLMPrinterModel.MW_170;
+        case "MW-270":   value = BRLMPrinterModel.MW_270;
+        case "RJ-4040":   value = BRLMPrinterModel.RJ_4040;
+        case "RJ-3050":   value = BRLMPrinterModel.RJ_3050;
+        case "RJ-3150":   value = BRLMPrinterModel.RJ_3150;
+        case "RJ-2050":   value = BRLMPrinterModel.RJ_2050;
+        case "RJ-2140":   value = BRLMPrinterModel.RJ_2140;
+        case "RJ-2150":   value = BRLMPrinterModel.RJ_2150;
+        case "RJ-4230B":   value = BRLMPrinterModel.RJ_4230B;
+        case "RJ-4250WB":   value = BRLMPrinterModel.RJ_4250WB;
+        case "TD-2120N":   value = BRLMPrinterModel.TD_2120N;
+        case "TD-2130N":   value = BRLMPrinterModel.TD_2130N;
+        case "TD-4100N":   value = BRLMPrinterModel.TD_4100N;
+        case "TD-4420DN":   value = BRLMPrinterModel.TD_4420DN;
+        case "TD-4520DN":   value = BRLMPrinterModel.TD_4520DN;
+        case "TD-4550DNW":   value = BRLMPrinterModel.TD_4550DNWB;
+        case "QL-710W":   value = BRLMPrinterModel.QL_710W;
+        case "QL-720NW":   value = BRLMPrinterModel.QL_720NW;
+        case "QL-810W":   value = BRLMPrinterModel.QL_810W;
+        case "QL-820NWB":   value = BRLMPrinterModel.QL_820NWB;
+        case "QL-1110NWB":   value = BRLMPrinterModel.QL_1110NWB;
+        case "QL-1115NWB":   value = BRLMPrinterModel.QL_1115NWB;
+        case "PT-E550W":   value = BRLMPrinterModel.PT_E550W;
+        case "PT-P750W":   value = BRLMPrinterModel.PT_P750W;
+        case "PT-D800W":   value = BRLMPrinterModel.PT_D800W;
+        case "PT-E800W":   value = BRLMPrinterModel.PT_E800W;
+        case "PT-E850TKW":   value = BRLMPrinterModel.PT_E850TKW;
+        case "PT-P900W":    value = BRLMPrinterModel.PT_P900W;
+        case "PT-P950NW":   value = BRLMPrinterModel.PT_P950NW;
+        case "PT-P300BT":   value = BRLMPrinterModel.PT_P300BT;
+        case "PT-P710BT":   value = BRLMPrinterModel.PT_P710BT;
+        case "PT-P910BT":   value = BRLMPrinterModel.PT_P910BT;
+            
+        default:
+            value = BRLMPrinterModel.unknown;
+        }
+        return value;
     }
 }
 

@@ -1,6 +1,6 @@
 # @rdlabo/capacitor-brotherprint
 
-Capacitor Brother Print is a native Brother Print SDK implementation for iOS & Android. This plugin can use in `PT-P910BT` `QL-820NW` and `QL-800`.
+Capacitor Brother Print is a native Brother Print SDK implementation for iOS & Android. This plugin can be used with limited support for `PT-P910BT` `QL-820NW` and `QL-800`.
 
 ## How to install
 
