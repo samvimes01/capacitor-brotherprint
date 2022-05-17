@@ -42,7 +42,7 @@ export interface BrotherPrintOptions {
   printerType: string;
   serialNumber: string;
   numberOfCopies: number;
-  labelNameIndex: 16 | 38;
+  labelNameIndex: number;
   ipAddress?: string;
   localName?: string;
 }

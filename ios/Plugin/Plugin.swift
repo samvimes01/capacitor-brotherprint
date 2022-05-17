@@ -18,21 +18,26 @@ public class BrotherPrint: CAPPlugin, BRPtouchNetworkDelegate {
             return;
         }
         
-        let newImageData = Data(base64Encoded: encodedImage, options: []);
+        let newImageData = Data(base64Encoded: encodedImage, options:.ignoreUnknownCharacters);
         
         let printerType: String = call.getString("printerType") ?? "";
         if (printerType == "") {
             call.reject("Error - printerType is not found.");
             return;
         }
-        
-        // 検索からデバイス情報が得られた場合
+
+        let printerTypeArr = printerType.components(separatedBy: "-");
+        let printerModel: String = printerTypeArr[0];
+        let defaultSettings = self.getPrinterSettingsForType(printerType);
+        if (defaultSettings == BRLMPrinterModel.unknown) {
+            call.reject("Error - unknown printerType.");
+            return;
+        }
+
         let localName: String = call.getString("localName") ?? "";
         let ipAddress: String = call.getString("ipAddress") ?? "";
         let serialNumber: String = call.getString("serialNumber") ?? "";
-
         if (localName=="" && ipAddress=="" && serialNumber=="") {
-            // iOS非対応
             call.reject("Error - connection is not found.");
             return;
         }
@@ -65,8 +70,7 @@ public class BrotherPrint: CAPPlugin, BRPtouchNetworkDelegate {
             }
             
             guard
-                let decodedByte = UIImage(data: newImageData! as Data),
-                let printSettings = BRLMQLPrintSettings(defaultPrintSettingsWith: self.getPrinterSettings(printerType))
+                let decodedByte = UIImage(data: newImageData! as Data)
                 else {
                     printerDriver.closeChannel();
                     self.notifyListeners("onPrintError", data: [
@@ -75,19 +79,59 @@ public class BrotherPrint: CAPPlugin, BRPtouchNetworkDelegate {
                     return
             }
             
-            let labelNameIndex = call.getInt("labelNameIndex") ?? 16;
-            printSettings.labelSize = labelNameIndex == 16 ?
-                BRLMQLPrintSettingsLabelSize.rollW62 : BRLMQLPrintSettingsLabelSize.rollW62RB;
-            printSettings.autoCut = true
-            printSettings.numCopies = UInt(call.getInt("numberOfCopies") ?? 1);
             
-            let printError = printerDriver.printImage(with: decodedByte.cgImage!, settings: printSettings);
             
+            guard
+                let printSettings =
+                        (printerModel=="PT") ? BRLMPTPrintSettings(defaultPrintSettingsWith:defaultSettings) :
+                        (printerModel=="QL") ? BRLMQLPrintSettings(defaultPrintSettingsWith:defaultSettings) :
+                        (printerModel=="TD") ? BRLMTDPrintSettings(defaultPrintSettingsWith:defaultSettings) :
+                        (printerModel=="RJ") ? BRLMRJPrintSettings(defaultPrintSettingsWith:defaultSettings) :
+                        (printerModel=="MW") ? BRLMMWPrintSettings(defaultPrintSettingsWith:defaultSettings) :
+                        BRLMPJPrintSettings(defaultPrintSettingsWith:defaultSettings)
+                else {
+                    printerDriver.closeChannel();
+                    self.notifyListeners("onPrintError", data: [
+                        "value": "Error - Printer settings error."
+                    ]);
+                    return
+            }
+            
+            if (printerModel == "QL") {
+                let labelNameIndex = call.getInt("labelNameIndex") ?? 16;
+                (printSettings  as! BRLMQLPrintSettings).labelSize = labelNameIndex == 16 ?
+                    BRLMQLPrintSettingsLabelSize.rollW62 : BRLMQLPrintSettingsLabelSize.rollW62RB;
+                (printSettings  as! BRLMQLPrintSettings).autoCut = true
+                (printSettings  as! BRLMQLPrintSettings).numCopies = UInt(call.getInt("numberOfCopies") ?? 1);
+            }
+            
+            if (printerModel == "PT") {
+                let labelNameIndex = call.getInt("labelNameIndex") ?? 36;
+                (printSettings  as! BRLMPTPrintSettings).labelSize = labelNameIndex == 36 ?
+                BRLMPTPrintSettingsLabelSize.width36mm : BRLMPTPrintSettingsLabelSize.width24mm;
+                (printSettings  as! BRLMPTPrintSettings).autoCut = true
+                (printSettings  as! BRLMPTPrintSettings).numCopies = UInt(call.getInt("numberOfCopies") ?? 1);
+            }
+            
+            if (printerModel == "TD") {
+                (printSettings  as! BRLMTDPrintSettings).numCopies = UInt(call.getInt("numberOfCopies") ?? 1);
+            }
+            
+            if (printerModel == "RJ") {
+                (printSettings  as! BRLMRJPrintSettings).numCopies = UInt(call.getInt("numberOfCopies") ?? 1);
+            }
+            
+            if (printerModel == "MW") {
+                (printSettings  as! BRLMMWPrintSettings).numCopies = UInt(call.getInt("numberOfCopies") ?? 1);
+            }
+            
+            let printError = printerDriver.printImage(with: decodedByte.cgImage!, settings: printSettings  as! BRLMPrintSettingsProtocol);
             
             if printError.code != .noError {
                 printerDriver.closeChannel();
+                NSLog(printError.description());
                 self.notifyListeners("onPrintError", data: [
-                    "value": printError.code
+                    "value": printError.description()
                 ]);
                 return;
             }
@@ -186,7 +230,7 @@ public class BrotherPrint: CAPPlugin, BRPtouchNetworkDelegate {
         ];
     }
     
-    private func getPrinterSettings(_ printerType:String) -> BRLMPrinterModel {
+    private func getPrinterSettingsForType(_ printerType:String) -> BRLMPrinterModel {
         var value: BRLMPrinterModel;
         switch printerType {
         case "PJ-673":   value = BRLMPrinterModel.PJ_673;
