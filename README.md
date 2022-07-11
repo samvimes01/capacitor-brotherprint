@@ -87,7 +87,31 @@ and download `BrotherPrintLibrary.aar` and put to your android project:
 https://support.brother.co.jp/j/s/support/html/mobilesdk/guide/getting-started/getting-started-android.html
 
 ### iOS configuration
-comming...
+To configure this plugin for iOS (with network privacy updates added in 14+), you'll need to include permissions for location as well as searching the network. This is explained here: https://developer.apple.com/videos/play/wwdc2020/10110/
+
+The following info.plist entries are required:
+
+Bonjour Services to Allow the Search
+```	
+<key>NSBonjourServices</key>
+<array>
+	<string>_pdl-datastream._tcp</string>
+	<string>_printer._tcp</string>
+	<string>_ipp._tcp</string>
+</array>
+```
+
+Network Usage Statement
+```
+<key>NSLocalNetworkUsageDescription</key>
+<string>The local network is needed to find printers</string>
+```
+
+Location In-Use Statement
+```
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>To use the local network, it&apos;s required that you grant permission for location.</string>
+```
 
 ## Run Demo
 以下デモの動かし方です。
