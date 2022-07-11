@@ -110,7 +110,7 @@ Network Usage Statement
 Location In-Use Statement
 ```
 <key>NSLocationWhenInUseUsageDescription</key>
-<string>To use the local network, it&apos;s required that you grant permission for location.</string>
+<string>To use the local network, it's required that you grant permission for location.</string>
 ```
 
 ## Run Demo
