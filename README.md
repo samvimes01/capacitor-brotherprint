@@ -56,8 +56,11 @@ export class BrotherComponent {
       console.log(values);
     });
 
-    BrotherPrint.searchWiFiPrinter();
-    BrotherPrint.searchBLEPrinter();
+    const options : BrotherSearchOptions = {
+      printerType : "QL-810W"
+    }
+    BrotherPrint.searchWiFiPrinter(options);
+    BrotherPrint.searchBLEPrinter(options);
   } 
 }
 ```
