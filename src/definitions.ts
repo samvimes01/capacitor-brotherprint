@@ -2,7 +2,7 @@ import { PluginListenerHandle } from '@capacitor/core';
 
 export interface BrotherPrintPlugin {
   printImage(options: BrotherPrintOptions): Promise<{ value: boolean }>;
-  searchWiFiPrinter(): Promise<void>;
+  searchWiFiPrinter(options: BrotherPrintOptions): Promise<void>;
   searchBLEPrinter(): Promise<void>;
 
   addListener(
@@ -38,7 +38,7 @@ export interface BrotherPrintPlugin {
 
 export interface BrotherPrintOptions {
   encodedImage: string;
-  printerType: 'QL-820NWB' | 'QL-800';
+  printerType: string; //"QL-710W","QL-720NW","QL-810W","QL-820NWB","QL-1110NWB","QL-1115NWB";
   numberOfCopies: number;
   labelNameIndex: 16 | 38;
   ipAddress?: string;
