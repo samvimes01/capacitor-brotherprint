@@ -2,7 +2,7 @@ import { PluginListenerHandle } from '@capacitor/core';
 
 export interface BrotherPrintPlugin {
   printImage(options: BrotherPrintOptions): Promise<{ value: boolean }>;
-  searchWiFiPrinter(options: BrotherPrintOptions): Promise<void>;
+  searchWiFiPrinter(printerType: string): Promise<void>;
   searchBLEPrinter(): Promise<void>;
 
   addListener(
