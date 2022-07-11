@@ -26,7 +26,9 @@ public class BrotherPrint: CAPPlugin, BRPtouchNetworkDelegate {
             return;
         }
         
-        if (printerType != "QL-820NWB") {
+        let allowedPrinters = ["QL-810W","QL-720NW","QL-820NWB","QL-1110NWB","QL-1115NWB"];
+        
+        if (!allowedPrinters.contains(printerType)) {
             // iOS非対応
             call.error("Error - connection is not found.");
             return;
@@ -53,25 +55,45 @@ public class BrotherPrint: CAPPlugin, BRPtouchNetworkDelegate {
             }
             
             let generateResult = BRLMPrinterDriverGenerator.open(channel);
+            
+            var printerOption = BRLMPrinterModel.unknown;
+            
+            if( printerType == "QL-810W" ){
+                printerOption = BRLMPrinterModel.QL_810W;
+            }
+            else if( printerType == "QL-720NW" ){
+                printerOption = BRLMPrinterModel.QL_720NW;
+            }
+            else if( printerType == "QL-820NWB" ){
+                printerOption = BRLMPrinterModel.QL_820NWB;
+            }
+            else if( printerType == "QL-1110NWB" ){
+                printerOption = BRLMPrinterModel.QL_1110NWB;
+            }
+            else if( printerType == "QL-1115NWB" ){
+                printerOption = BRLMPrinterModel.QL_1115NWB;
+            }
+            
             guard generateResult.error.code == BRLMOpenChannelErrorCode.noError,
-                let printerDriver = generateResult.driver else {
+                let printerDriver = generateResult.driver
+                else {
                     self.notifyListeners("onPrintError", data: [
                         "value": generateResult.error.code
                     ]);
                     NSLog("Error - Open Channel: \(generateResult.error.code)")
                     return
-            }
+                }
             
             guard
                 let decodedByte = UIImage(data: newImageData! as Data),
-                let printSettings = BRLMQLPrintSettings(defaultPrintSettingsWith: BRLMPrinterModel.QL_820NWB)
+                let printSettings = BRLMQLPrintSettings(defaultPrintSettingsWith: printerOption)
                 else {
                     printerDriver.closeChannel();
                     self.notifyListeners("onPrintError", data: [
                         "value": "Error - Image file is not found."
                     ]);
                     return
-            }
+                }
             
             let labelNameIndex = call.getInt("labelNameIndex") ?? 16;
             printSettings.labelSize = labelNameIndex == 16 ?
@@ -101,9 +123,10 @@ public class BrotherPrint: CAPPlugin, BRPtouchNetworkDelegate {
     
     @objc func searchWiFiPrinter(_ call: CAPPluginCall) {
         NSLog("Start searchWiFiPrinter");
+        let printerType: String = call.getString("printerType") ?? "";
         DispatchQueue.main.async {
             let manager = BRPtouchNetworkManager()
-            manager.setPrinterName("QL-820NWB")
+            manager.setPrinterName(printerType)
             manager.delegate = self
             manager.startSearch(5)
             self.networkManager = manager
@@ -157,4 +180,3 @@ public class BrotherPrint: CAPPlugin, BRPtouchNetworkDelegate {
         }
     }
 }
-
