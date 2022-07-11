@@ -26,5 +26,5 @@ export class BrotherPrintWeb extends WebPlugin implements BrotherPrintPlugin {
   /**
    * search Bluetooth Printer
    */
-  async searchBLEPrinter(): Promise<void> {}
+  async searchBLEPrinter(_options: BrotherSearchOptions): Promise<void> {}
 }
