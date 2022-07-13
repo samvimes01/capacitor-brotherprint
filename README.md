@@ -1,19 +1,31 @@
-# @rdlabo/capacitor-brotherprint
+# @samvimes01/capacitor-brotherprint
+Its's a mix of 3 repos.
+Kudos to author of original repo Masahiko Sakakibara: https://github.com/rdlabo-team/capacitor-brotherprint
+And forked repos:
+- Eugene Williams: https://github.com/eugenedw/capacitor-brotherprint
+- Paul Johnson: https://github.com/paul-uulabs/capacitor-brotherprint
 
 Capacitor Brother Print is a native Brother Print SDK implementation for iOS & Android. This plugin can be used with limited support for `PT-P910BT` `QL-820NW` and `QL-800`.
+
+## 
 
 ## How to install
 
 ```
-% npm install @rdlabo/capacitor-brotherprint@git@github.com:paul-uulabs/capacitor-brotherprint.git
+% npm install @samvimes01/capacitor-brotherprint@git@github.com:samvimes01/capacitor-brotherprint.git
 ```
+
+## This repo is for nx  monorepo capacitor apps
+On iOS it depends on BrotherPrint binaries, and path is set in a special file module.muduledata
+Path is relative to file in node_mudules, but real app in nx lives in apps/app-name.
+So in this repo as a quick solution path is hardcode to apps/compliance-webapp
 
 ## How to use
 
 ```typescript
 import { Plugins } from '@capacitor/core';
 const { BrotherPrint } = Plugins;
-import { BrotherPrintOptions } from '@rdlabo/capacitor-brotherprint';
+import { BrotherPrintOptions } from '@samvimes01/capacitor-brotherprint';
 
 @Component({
   selector: 'brother-print',

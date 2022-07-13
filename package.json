@@ -1,5 +1,5 @@
 {
-  "name": "@rdlabo/capacitor-brotherprint",
+  "name": "@samvimes01/capacitor-brotherprint",
   "version": "2.0.2",
   "description": "Capacitor plugin for Brother Print SDK",
   "main": "dist/plugin.js",
@@ -25,6 +25,11 @@
     "npm-publish": "np --no-tests"
   },
   "author": "Masahiko Sakakibara<sakakibara@rdlabo.jp>",
+  "contributors": [
+    {"name": "Eugene", "email": "eugenewilliams@gmail.com", "url": "https://github.com/eugenedw/capacitor-brotherprint"},
+    {"name": "Paul Johnson", "email": "me@pauljohnson.com", "url": "https://github.com/paul-uulabs/capacitor-brotherprint"},
+    {"name": "Oleksandr Korneiko", "email": "oleksandr.korneiko@gmail.com", "url": "https://github.com/samvimes01/capacitor-brotherprint"}
+  ],
   "license": "MIT",
   "devDependencies": {
     "@capacitor/android": "^3.0.0",
@@ -58,7 +63,7 @@
     "dist/",
     "ios/",
     "android/",
-    "RdlaboCapacitorBrotherprint.podspec"
+    "Samvimes01CapacitorBrotherprint.podspec"
   ],
   "keywords": [
     "capacitor",
@@ -80,9 +85,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:paul-uulabs/capacitor-brotherprint.git"
+    "url": "git@github.com:samvimes01/capacitor-brotherprint"
   },
   "bugs": {
-    "url": "git@github.com:paul-uulabs/capacitor-brotherprint.git/issues"
+    "url": "git@github.com:samvimes01/capacitor-brotherprint"
   }
 }

@@ -61,24 +61,6 @@ public class BrotherPrint: CAPPlugin, BRPtouchNetworkDelegate {
             
             let generateResult = BRLMPrinterDriverGenerator.open(channel);
             
-            var printerOption = BRLMPrinterModel.unknown;
-            
-            if( printerType == "QL-810W" ){
-                printerOption = BRLMPrinterModel.QL_810W;
-            }
-            else if( printerType == "QL-720NW" ){
-                printerOption = BRLMPrinterModel.QL_720NW;
-            }
-            else if( printerType == "QL-820NWB" ){
-                printerOption = BRLMPrinterModel.QL_820NWB;
-            }
-            else if( printerType == "QL-1110NWB" ){
-                printerOption = BRLMPrinterModel.QL_1110NWB;
-            }
-            else if( printerType == "QL-1115NWB" ){
-                printerOption = BRLMPrinterModel.QL_1115NWB;
-            }
-            
             guard generateResult.error.code == BRLMOpenChannelErrorCode.noError,
                 let printerDriver = generateResult.driver
                 else {
@@ -90,7 +72,7 @@ public class BrotherPrint: CAPPlugin, BRPtouchNetworkDelegate {
                 }
             
             guard
-                let decodedByte = UIImage(data: newImageData! as Data),
+                let decodedByte = UIImage(data: newImageData! as Data)
                 else {
                     printerDriver.closeChannel();
                     self.notifyListeners("onPrintError", data: [
