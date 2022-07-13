@@ -1,9 +1,11 @@
 # @rdlabo/capacitor-brotherprint
-Capacitor Brother Print is a native Brother Print SDK implementation for iOS & Android. This plugin can use in `QL-820NW` and `QL-800`.
+
+Capacitor Brother Print is a native Brother Print SDK implementation for iOS & Android. This plugin can be used with limited support for `PT-P910BT` `QL-820NW` and `QL-800`.
 
 ## How to install
+
 ```
-% npm install @rdlabo/capacitor-brotherprint@git@github.com:rdlabo-team/capacitor-brotherprint.git
+% npm install @rdlabo/capacitor-brotherprint@git@github.com:paul-uulabs/capacitor-brotherprint.git
 ```
 
 ## How to use
@@ -16,43 +18,45 @@ import { BrotherPrintOptions } from '@rdlabo/capacitor-brotherprint';
 @Component({
   selector: 'brother-print',
   templateUrl: 'brother.component.html',
-  styleUrls: ['brother.component.scss']
+  styleUrls: ['brother.component.scss'],
 })
 export class BrotherComponent {
   constructor() {
     // Success to print
-    BrotherPrint.addListener('onPrint', (info) => {
-      console.log("onPrint");
+    BrotherPrint.addListener('onPrint', () => {
+      console.log('onPrint');
     });
     // Failed to communication with printer
-    BrotherPrint.addListener('onPrintError', (info) => {
-      console.log("onPrintError");
+    BrotherPrint.addListener('onPrintError', () => {
+      console.log('onPrintError');
     });
     // Failed to communication with printer
-    BrotherPrint.addListener('onPrintFailedCommunication', (info) => {
-      console.log("onPrintFailedCommunication");
+    BrotherPrint.addListener('onPrintFailedCommunication', () => {
+      console.log('onPrintFailedCommunication');
     });
   }
   print() {
     BrotherPrint.printImage({
       printerType: 'QL-820NW',
       encodedImage: 'base64 removed mime-type', // base64
-    } as BrotherPrintOptions)
+    } as BrotherPrintOptions);
   }
   printWithNetWork() {
-    const wifi = () => new Promise(resolve => {
-      BrotherPrint.addListener('onIpAddressAvailable', (info) => {
-        resolve(info);
+    const wifi = () =>
+      new Promise(resolve => {
+        BrotherPrint.addListener('onIpAddressAvailable', info => {
+          resolve(info);
+        });
       });
-    });
 
-    const ble = () => new Promise(resolve => {
-      BrotherPrint.addListener('onBLEAvailable', (info) => {
-        resolve(info);
+    const ble = () =>
+      new Promise(resolve => {
+        BrotherPrint.addListener('onBLEAvailable', () => {
+          resolve(true);
+        });
       });
-    });
-    
-    Promise.all([wifi(), ble()]).then((values) => {
+
+    Promise.all([wifi(), ble()]).then(values => {
       console.log(values);
     });
 
@@ -66,11 +70,13 @@ export class BrotherComponent {
 ```
 
 ## Installation
+
 ```
 $ npm install --save @rdlabo/capacitor-brotherprint
 ```
 
 ### Android configuration
+
 In file `android/app/src/main/java/**/**/MainActivity.java`, add the plugin to the initialization list:
 
 ```java
@@ -114,6 +120,7 @@ Location In-Use Statement
 ```
 
 ## Run Demo
+
 以下デモの動かし方です。
 
 ```

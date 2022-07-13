@@ -1,6 +1,6 @@
 {
   "name": "@rdlabo/capacitor-brotherprint",
-  "version": "2.0.0-4",
+  "version": "2.0.2",
   "description": "Capacitor plugin for Brother Print SDK",
   "main": "dist/plugin.js",
   "module": "dist/esm/index.js",
@@ -21,6 +21,7 @@
     "watch": "tsc --watch",
     "prepublishOnly": "npm run build",
     "release": "np --no-tests",
+    "prepare": "npm run build",
     "npm-publish": "np --no-tests"
   },
   "author": "Masahiko Sakakibara<sakakibara@rdlabo.jp>",
@@ -79,9 +80,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:rdlabo-team/capacitor-brotherprint.git"
+    "url": "git@github.com:paul-uulabs/capacitor-brotherprint.git"
   },
   "bugs": {
-    "url": "git@github.com:rdlabo-team/capacitor-brotherprint.git/issues"
+    "url": "git@github.com:paul-uulabs/capacitor-brotherprint.git/issues"
   }
 }

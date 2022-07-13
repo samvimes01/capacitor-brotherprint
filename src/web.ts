@@ -1,5 +1,5 @@
 import { WebPlugin } from '@capacitor/core';
-import { BrotherPrintPlugin, BrotherPrintOptions } from './definitions';
+import { BrotherPrintPlugin, BrotherPrintOptions, BrotherSearchOptions } from './definitions';
 
 export class BrotherPrintWeb extends WebPlugin implements BrotherPrintPlugin {
   constructor() {
@@ -24,7 +24,12 @@ export class BrotherPrintWeb extends WebPlugin implements BrotherPrintPlugin {
   async searchWiFiPrinter(_options: BrotherSearchOptions): Promise<void> {}
 
   /**
-   * search Bluetooth Printer
+   * search LE Bluetooth Printer
    */
   async searchBLEPrinter(_options: BrotherSearchOptions): Promise<void> {}
+
+  /**
+   * get Paired Bluetooth Printer
+   */
+  async retrieveBluetoothPrinter(): Promise<void> {}
 }

@@ -44,6 +44,18 @@ public class BrotherPrint extends Plugin {
         }
 
         switch (call.getString("printerType")) {
+            case "PT-P910BT":
+                settings.printerModel = Model.PT_P910BT;
+
+                final String localName = call.getString("localName");
+
+                if (localName != null) {
+                    settings.port = PrinterInfo.Port.BLUETOOTH;
+                    settings.setLocalName(localName);
+                } else {
+                    settings.port = PrinterInfo.Port.USB;
+                }
+                break;
             case "QL-800":
                 settings.printerModel = Model.QL_800;
                 settings.port = PrinterInfo.Port.USB;
@@ -115,7 +127,7 @@ public class BrotherPrint extends Plugin {
                 }
             )
                 .start();
-            call.resolve();
+            call.success(new JSObject().put("value", true));
         } catch (Exception ex) {
             notifyListeners("onPrintFailedCommunication", new JSObject().put("value", ""));
             call.reject(ex.getLocalizedMessage(), ex);
@@ -141,7 +153,7 @@ public class BrotherPrint extends Plugin {
             }
         )
             .start();
-        call.resolve();
+        call.success(new JSObject().put("value", true));
     }
 
     @PluginMethod
@@ -163,7 +175,7 @@ public class BrotherPrint extends Plugin {
             }
         )
             .start();
-        call.resolve();
+        call.success(new JSObject().put("value", true));
     }
 
     @PluginMethod
